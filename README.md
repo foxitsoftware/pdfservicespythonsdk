@@ -39,9 +39,16 @@ print("Conversion (second version) completed successfully. Check the output file
 * compress(input_path,output_path,compressionLevel) - compresses a PDF, default level is LOW
 * linearize(input_path,output_path) - linearizes a PDF
 * flatten(input_path,output_path) - flattens a PDF
+* combine(input_path[], output_path, config) - combines an array of file paths
 
 ## To Do: 
 
-* remove-password, protect, combine, manipulate, split, compare
+* remove-password, protect, manipulate, split, compare
 * Make output path optional and just return the doc id
 * Make checking a task public and a utility pollTask to handle repeating (this and the previous two methods would let devs chain calls)
+
+## History 
+
+| Date | Change |
+|------|-----------|
+| 7/23/2025 | Just updated the doc to reflect combine being added. |
