@@ -1,4 +1,5 @@
 import unittest 
+import json
 import sys
 import os 
 
@@ -35,6 +36,24 @@ class TestPDFServiceSDK(unittest.TestCase):
 		}
 		self.sdk.combine(inputs, f'{self.thisdir}/output/output_combined_nobookmarks.pdf',config)
 		self.assertTrue(os.path.exists(f'{self.thisdir}/output/output_combined_nobookmarks.pdf'))		
+
+	def test_split_pdf(self):
+		self.sdk.split(f'{self.thisdir}/input/input.pdf', f'{self.thisdir}/output/splitoutput.zip', 2)
+		self.assertTrue(os.path.exists(f'{self.thisdir}/output/splitoutput.zip'))
+
+	def test_compare(self):
+		res = self.sdk.compare(f'{self.thisdir}/input/input.pdf', f'{self.thisdir}/input/second.pdf', {
+			"compareType":"ALL",
+			"resultType":"JSON"
+			})
+		
+		try:
+			json.loads(res)
+			is_valid_json = True
+		except ValueError:
+			is_valid_json = False
+
+		self.assertTrue(is_valid_json)
 
 if __name__ == '__main__':
 	unittest.main()

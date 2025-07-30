@@ -40,10 +40,12 @@ print("Conversion (second version) completed successfully. Check the output file
 * linearize(input_path,output_path) - linearizes a PDF
 * flatten(input_path,output_path) - flattens a PDF
 * combine(input_path[], output_path, config) - combines an array of file paths
+* split(input_path, output_path, page_count) - splits a PDF into page_count files, returns a zip
+* compare(input_path, second_path, config, output_path) - compares two PDFs. You can leave off output_path and get the JSON directly, but if you ask for a PDF result, ensure you pass it.
 
 ## To Do: 
 
-* remove-password, protect, manipulate, split, compare
+* remove-password, protect, manipulate
 * Make output path optional and just return the doc id
 * Make checking a task public and a utility pollTask to handle repeating (this and the previous two methods would let devs chain calls)
 
@@ -51,4 +53,5 @@ print("Conversion (second version) completed successfully. Check the output file
 
 | Date | Change |
 |------|-----------|
+| 7/30/2025 | Added split and compare |
 | 7/23/2025 | Just updated the doc to reflect combine being added. |

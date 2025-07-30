@@ -41,6 +41,11 @@ class PDFServiceSDK:
         with open(output_path, "wb") as f:
             f.write(r.content)
 
+    def downloadText(self, doc_id):
+        r = requests.get(f"{self.host}/pdf-services/api/documents/{doc_id}/download", stream=True, headers=self._headers())
+        r.raise_for_status()
+        return r.content
+
     def combine(self, pdfs, output_path, config=None):
         docs = []
         for pdf in pdfs:
@@ -55,6 +60,20 @@ class PDFServiceSDK:
         task_id = r.json()["taskId"]
         result_doc_id = self._check_task(task_id)
         self.download(result_doc_id, output_path)
+
+    def compare(self, input_path, second_path, config, output_path=None):
+        doc_id = self.upload(input_path)
+        second_id = self.upload(second_path)
+        body = {"baseDocument": { "documentId": doc_id }, "compareDocument": { "documentId": second_id }, "config":config }
+        r = requests.post(f"{self.host}/pdf-services/api/documents/analyze/pdf-compare", json=body, headers=self._headers("application/json"))
+        r.raise_for_status()
+        task_id = r.json()["taskId"]
+        result_doc_id = self._check_task(task_id)
+
+        if output_path is not None:
+            self.download(result_doc_id, output_path)
+        else:
+            return self.downloadText(result_doc_id)
 
     def compress(self, input_path, output_path, level="LOW"):
         doc_id = self.upload(input_path)
@@ -186,6 +205,15 @@ class PDFServiceSDK:
         doc_id = self.upload(input_path)
         body = {"documentId": doc_id}
         r = requests.post(f"{self.host}/pdf-services/api/documents/create/pdf-from-ppt", json=body, headers=self._headers("application/json"))
+        r.raise_for_status()
+        task_id = r.json()["taskId"]
+        result_doc_id = self._check_task(task_id)
+        self.download(result_doc_id, output_path)
+
+    def split(self, input_path, output_path, page_count):
+        doc_id = self.upload(input_path)
+        body = {"documentId": doc_id, "pageCount":page_count}
+        r = requests.post(f"{self.host}/pdf-services/api/documents/modify/pdf-split", json=body, headers=self._headers("application/json"))
         r.raise_for_status()
         task_id = r.json()["taskId"]
         result_doc_id = self._check_task(task_id)
