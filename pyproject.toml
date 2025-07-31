@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pdfservices_sdk_foxit"
-version = "0.0.2"
+version = "0.0.3"
 authors = [
   { name="Raymond Camden", email="jedimaster@foxitsoftware.com" },
 ]

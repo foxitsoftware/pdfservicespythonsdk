@@ -1,20 +1,31 @@
 import requests
 from time import sleep
-
+import base64
 class PDFServiceSDK:
 
-    def __init__(self, client_id, client_secret, host="https://na1.fusion.foxit.com"):
+    def __init__(self, client_id, client_secret, host="https://na1.fusion.foxit.com", docgen_client_id=None, docgen_client_secret=None):
         self.client_id = client_id
         self.client_secret = client_secret
         self.host = host
+        self.docgen_client_id = docgen_client_id
+        self.docgen_client_secret = docgen_client_secret
 
-    def _headers(self, content_type=None):
-        headers = {
-            "client_id": self.client_id,
-            "client_secret": self.client_secret
-        }
+    def _headers(self, content_type=None, service_type="pdfservices"):
+
+        if service_type == "pdfservices":
+            headers = {
+                "client_id": self.client_id,
+                "client_secret": self.client_secret
+            }
+        elif service_type == "docgen":
+            headers = {
+                "client_id": self.docgen_client_id,
+                "client_secret": self.docgen_client_secret
+            }
+
         if content_type:
             headers["Content-Type"] = content_type
+
         return headers
 
     def upload(self, path):
@@ -84,6 +95,31 @@ class PDFServiceSDK:
         result_doc_id = self._check_task(task_id)
         self.download(result_doc_id, output_path)
 
+    def docgen(self, input_path, output_path, data):
+
+        def get_ext(path):
+            return path.split('.')[-1].lower()
+
+        output_ext = get_ext(output_path)
+
+        with open(input_path, 'rb') as file:
+            bd = file.read()
+            b64 = base64.b64encode(bd).decode('utf-8')
+            
+        body = { "outputFormat":output_ext, "documentValues": data,  "base64FileString":b64 }
+
+        request = requests.post(f"{self.host}/document-generation/api/GenerateDocumentBase64", json=body, headers=self._headers("application/json","docgen"))
+        result = request.json()
+
+        # Todo, error handling
+        b64_bytes = result["base64FileString"].encode('ascii')
+        binary_data = base64.b64decode(b64_bytes)
+
+        with open(output_path, 'wb') as file:
+            file.write(binary_data)
+        
+        return
+     
     def excel_to_pdf(self, input_path, output_path):
         doc_id = self.upload(input_path)
         body = {"documentId": doc_id}

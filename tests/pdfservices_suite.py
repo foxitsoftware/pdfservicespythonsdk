@@ -9,7 +9,7 @@ from pdf_service_sdk import PDFServiceSDK
 class TestPDFServiceSDK(unittest.TestCase):
 
 	def setUp(self):
-		self.sdk = PDFServiceSDK(os.environ.get('CLIENT_ID'), os.environ.get('CLIENT_SECRET'))
+		self.sdk = PDFServiceSDK(os.environ.get('CLIENT_ID'), os.environ.get('CLIENT_SECRET'), docgen_client_id=os.environ.get('DG_CLIENT_ID'),docgen_client_secret=os.environ.get('DG_CLIENT_SECRET'))
 		self.thisdir = os.path.dirname(os.path.abspath(__file__))
 		
 	def test_upload(self):
@@ -54,6 +54,21 @@ class TestPDFServiceSDK(unittest.TestCase):
 			is_valid_json = False
 
 		self.assertTrue(is_valid_json)
+
+	def test_docgen(self):
+		data = {
+			"name":"Raymond Camden",
+			"food":"sushi",
+			"favoriteMovie":"Star Wars",
+			"cats":[
+				{"name":"Mittens", "gender":"female", "age":3},
+				{"name":"Crackers", "gender":"male", "age":10},
+			]
+		}
+
+		self.sdk.docgen(f'{self.thisdir}/input/docgen_sample.docx', f'{self.thisdir}/output/dg_output.pdf', data)
+		self.assertTrue(os.path.exists(f'{self.thisdir}/output/dg_output.pdf'))
+
 
 if __name__ == '__main__':
 	unittest.main()
